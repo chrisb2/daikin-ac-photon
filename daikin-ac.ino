@@ -6,7 +6,7 @@
 #define TMP36_PIN A0
 #define VCC 3321
 #define ONE_DAY_MILLIS (24 * 60 * 60 * 1000)
-#define COMMAND_SIGNAL_MILLIS 60000
+#define COMMAND_SIGNAL_MILLIS 20000
 
 const int COMMAND_LENGTH = 27;    
 
