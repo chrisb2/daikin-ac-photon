@@ -6,6 +6,7 @@
 #define TMP36_PIN A0
 #define VCC 3321
 #define ONE_DAY_MILLIS (24 * 60 * 60 * 1000)
+#define PUBLISH_MILLIS (15 * 60 * 1000)
 #define COMMAND_SIGNAL_MILLIS 20000
 
 const int COMMAND_LENGTH = 27;    
@@ -72,12 +73,14 @@ struct IRState {
 
 volatile boolean commandReceived = false;
 double centigrade = 0.0;
+char temp[20];
 unsigned long lastSync = millis();
+unsigned long lastPublish = millis();
 unsigned long lastCommand;
 
 void setup()
 {
-    //WiFi.antennaSelect(ANT_INTERNAL);
+    // WiFi.antennaSelect(ANT_INTERNAL);
     pinMode(LED_PIN, OUTPUT);
     pinMode(TMP36_PIN, INPUT);
     Spark.function("daikin", control);
@@ -103,8 +106,14 @@ void loop() {
     
     if (millis() - lastSync > ONE_DAY_MILLIS) {
         // Request time synchronization from the Particle Cloud
-        //Spark.syncTime();
+        // Spark.syncTime();
         lastSync = millis();
+    }
+    
+    if (millis() - lastPublish > PUBLISH_MILLIS) {
+        sprintf(temp, "%d", (int) (centigrade + 0.5));
+        Spark.publish("temperature", temp, 60, PRIVATE);
+        lastPublish = millis();
     }
 } 
  
